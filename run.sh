@@ -11,4 +11,4 @@ source "$root_file_path/.venv/bin/activate"
 pip install -r "$root_file_path/requirements.txt"
 
 # Run the server
-mesop main.py
+mesop main.py --port 8080

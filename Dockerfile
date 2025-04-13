@@ -28,4 +28,4 @@ ENV GOOGLE_CLOUD_REGION="us-central1"
 EXPOSE 8080
 
 # Run the server
-CMD ["mesop", "main.py"]
+CMD ["mesop", "main.py", "--port", "8080"]
