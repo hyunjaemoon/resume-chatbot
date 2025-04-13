@@ -27,22 +27,20 @@ def handle_upload(e: me.UploadEvent):
 
 def upload_component():
     state = me.state(State)
-    with me.content_uploader(
-        accepted_file_types=["application/pdf"],
-        on_upload=handle_upload,
-        type="flat",
-        color="warn",
-        style=me.Style(font_weight="bold"),
-    ):
-        me.icon("upload")
-    if state.file_uploaded:
-        with me.box(style=me.Style(margin=me.Margin.all(10))):
-            me.text(f"File name: {state.file_uploaded.name}")
-            me.text(f"File size: {state.file_uploaded.size}")
-            me.text(f"File type: {state.file_uploaded.mime_type}")
+    with me.box(style=me.Style(display="flex", justify_content="center", align_items="center", align_content="center", align_self="center", padding=me.Padding.all(20))):
+        with me.content_uploader(
+            accepted_file_types=["application/pdf"],
+            on_upload=handle_upload,
+            type="flat",
+            color="warn",
+            style=me.Style(font_weight="bold"),
+        ):
+            me.icon("upload")
+        if state.file_uploaded:
             with me.box(style=me.Style(margin=me.Margin.all(10))):
-                me.image(src=_convert_contents_data_url(
-                    state.file_uploaded))
+                me.text(f"File name: {state.file_uploaded.name}")
+                me.text(f"File size: {state.file_uploaded.size}")
+                me.text(f"File type: {state.file_uploaded.mime_type}")
 
 
 @me.page(
@@ -57,15 +55,19 @@ def app():
         ),
     ):
         with me.box(style=me.Style(margin=me.Margin.all(10))):
-            me.link(text="Hyun Jae Moon Portfolio", url="https://hyunjaemoon.com", style=me.Style(color=me.theme_var("primary")))
+            me.link(text="Hyun Jae Moon Portfolio", url="https://hyunjaemoon.com",
+                    style=me.Style(color=me.theme_var("primary")))
         if state.file_uploaded:
             upload_component()
             mel.chat(
                 transform, title=f"Resume Chatbot - {state.file_uploaded._name}", bot_user="Resume Chatbot")
         else:
             with me.box(style=me.Style(margin=me.Margin.all(10))):
-                me.text("Welcome to the Resume Chatbot!", type="headline-2")
-                me.text("Please upload your resume to get started. File must be a PDF.")
+                me.text("Welcome to the Resume Chatbot!",
+                        type="headline-2", style=me.Style(text_align="center"))
+                me.text("Please upload your resume to get started.",
+                        style=me.Style(text_align="center"))
+                me.text("File must be a PDF.", style=me.Style(text_align="center"))
                 upload_component()
 
 
