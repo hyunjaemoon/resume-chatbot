@@ -9,6 +9,12 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Set working directory
+WORKDIR /app
+
+# Copy project files
+COPY . /app
+
 # Install Python dependencies directly without virtual environment
 # This is a simpler approach for Docker containers
 RUN pip3 install --upgrade pip
