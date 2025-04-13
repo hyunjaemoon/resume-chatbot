@@ -25,49 +25,48 @@ def handle_upload(e: me.UploadEvent):
     state.file_uploaded = e.file
 
 
+def upload_component():
+    state = me.state(State)
+    with me.content_uploader(
+        accepted_file_types=["application/pdf"],
+        on_upload=handle_upload,
+        type="flat",
+        color="warn",
+        style=me.Style(font_weight="bold"),
+    ):
+        me.icon("upload")
+    if state.file_uploaded:
+        with me.box(style=me.Style(margin=me.Margin.all(10))):
+            me.text(f"File name: {state.file_uploaded.name}")
+            me.text(f"File size: {state.file_uploaded.size}")
+            me.text(f"File type: {state.file_uploaded.mime_type}")
+            with me.box(style=me.Style(margin=me.Margin.all(10))):
+                me.image(src=_convert_contents_data_url(
+                    state.file_uploaded))
+
+
 @me.page(
     on_load=load,
     path="/",
 )
 def app():
     state = me.state(State)
-    with me.sidenav(
-        opened=True,
-        disable_close=True,
-        style=me.Style(
-            border_radius=0,
-            width=SIDENAV_WIDTH,
-            background=me.theme_var("surface-container-low"),
-            padding=me.Padding.all(15),
-        ),
-    ):
-        with me.content_uploader(
-            accepted_file_types=["application/pdf"],
-            on_upload=handle_upload,
-            type="flat",
-            color="warn",
-            style=me.Style(font_weight="bold"),
-        ):
-            me.icon("upload")
-        if state.file_uploaded:
-            with me.box(style=me.Style(margin=me.Margin.all(10))):
-                me.text(f"File name: {state.file_uploaded.name}")
-                me.text(f"File size: {state.file_uploaded.size}")
-                me.text(f"File type: {state.file_uploaded.mime_type}")
-                with me.box(style=me.Style(margin=me.Margin.all(10))):
-                    me.image(src=_convert_contents_data_url(
-                        state.file_uploaded))
     with me.box(
         style=me.Style(
-            margin=me.Margin(left=SIDENAV_WIDTH),
             padding=me.Padding.all(15),
         ),
     ):
+        with me.box(style=me.Style(margin=me.Margin.all(10))):
+            me.link(text="Hyun Jae Moon Portfolio", url="https://hyunjaemoon.com", style=me.Style(color=me.theme_var("primary")))
         if state.file_uploaded:
+            upload_component()
             mel.chat(
                 transform, title=f"Resume Chatbot - {state.file_uploaded._name}", bot_user="Resume Chatbot")
         else:
-            me.text("Welcome to the Resume Chatbot! Please upload your resume to get started. File must be a PDF.")
+            with me.box(style=me.Style(margin=me.Margin.all(10))):
+                me.text("Welcome to the Resume Chatbot!", type="headline-2")
+                me.text("Please upload your resume to get started. File must be a PDF.")
+                upload_component()
 
 
 def _convert_contents_data_url(file: me.UploadEvent):
