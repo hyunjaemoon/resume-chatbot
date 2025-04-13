@@ -1,2 +1,3 @@
 mesop
+gunicorn
 google-cloud-aiplatform
