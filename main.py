@@ -6,6 +6,7 @@ from resume_chatbot_agent import ResumeChatbotAgent
 
 
 SIDENAV_WIDTH = 200
+MAX_FILE_MB_SIZE = 5
 
 resume_chatbot_agent = ResumeChatbotAgent()
 
@@ -13,16 +14,22 @@ resume_chatbot_agent = ResumeChatbotAgent()
 @me.stateclass
 class State:
     file_uploaded: me.UploadedFile = None
+    file_size_error: bool = False
 
 
 def load(e: me.LoadEvent):
-    me.set_theme_mode("system")
+    me.set_theme_mode("dark")
+    me.set_page_title("Resume Chatbot")
 
 
 def handle_upload(e: me.UploadEvent):
     state = me.state(State)
+    if e.file.size > MAX_FILE_MB_SIZE * 1024 * 1024:
+        state.file_size_error = True
+        return
     resume_chatbot_agent.upload_resume(_convert_contents_data_url(e.file))
     state.file_uploaded = e.file
+    state.file_size_error = False
 
 
 def upload_component():
@@ -41,6 +48,10 @@ def upload_component():
                 me.text(f"File name: {state.file_uploaded.name}")
                 me.text(f"File size: {state.file_uploaded.size}")
                 me.text(f"File type: {state.file_uploaded.mime_type}")
+    if state.file_size_error:
+        with me.box(style=me.Style(margin=me.Margin.all(10))):
+            me.text(f"File size exceeds {MAX_FILE_MB_SIZE}MB limit. Please upload a smaller file.", style=me.Style(
+                text_align="center"))
 
 
 @me.page(
@@ -67,7 +78,8 @@ def app():
                         type="headline-2", style=me.Style(text_align="center"))
                 me.text("Please upload your resume to get started.",
                         style=me.Style(text_align="center"))
-                me.text("File must be a PDF.", style=me.Style(text_align="center"))
+                me.text(f"File must be a PDF under {MAX_FILE_MB_SIZE}MB.",
+                        style=me.Style(text_align="center"))
                 upload_component()
 
 
