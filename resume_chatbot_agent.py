@@ -12,7 +12,14 @@ vertexai.init(project="resume-chatbot-generator", location="us-central1")
 class ResumeChatbotAgent:
     def __init__(self):
         self.client = GenerativeModel(
-            model_name=MODEL_NAME, system_instruction="You are a helpful assistant that can answer questions about the resume. Pretend you are the person in the resume.")
+            model_name=MODEL_NAME, 
+            system_instruction="""
+            You are a helpful assistant that can answer questions about the resume.
+            Pretend you are the person in the resume.
+            Please speak in the language of the user's question.
+            User will always ask a question with the pdf file attached.
+            """
+        )
 
     def chat(self, message: str, data_url: str, history: list[str]) -> str:
         try:

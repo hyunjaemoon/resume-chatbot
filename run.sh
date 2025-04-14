@@ -10,5 +10,8 @@ source "$root_file_path/.venv/bin/activate"
 # Install dependencies
 pip install -r "$root_file_path/requirements.txt"
 
+# Open the browser
+open http://localhost:8080
+
 # Run the server
 mesop main.py --port 8080
