@@ -15,6 +15,7 @@ resume_chatbot_agent = ResumeChatbotAgent()
 class State:
     file_uploaded: me.UploadedFile = None
     file_size_error: bool = False
+    file_type_error: bool = False
     data_url: str = None
     history: tuple[tuple[str, str]] = ()
 
@@ -29,8 +30,14 @@ def handle_upload(e: me.UploadEvent):
     if e.file.size > MAX_FILE_MB_SIZE * 1024 * 1024:
         state.file_size_error = True
         return
+    else:
+        state.file_size_error = False
+    if e.file.mime_type != "application/pdf":
+        state.file_type_error = True
+        return
+    else:
+        state.file_type_error = False
     state.file_uploaded = e.file
-    state.file_size_error = False
     state.data_url = _convert_contents_data_url(e.file)
     state.history = ()
     refresh_output()
@@ -54,6 +61,10 @@ def upload_component():
     if state.file_size_error:
         with me.box(style=me.Style(margin=me.Margin.all(10))):
             me.text(f"File size exceeds {MAX_FILE_MB_SIZE}MB limit. Please upload a smaller file.", style=me.Style(
+                text_align="center"))
+    if state.file_type_error:
+        with me.box(style=me.Style(margin=me.Margin.all(10))):
+            me.text(f"File type must be a PDF. Please upload a PDF file.", style=me.Style(
                 text_align="center"))
 
 
