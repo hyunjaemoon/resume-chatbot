@@ -1,7 +1,7 @@
 import base64
 import mesop as me
-import mesop.labs as mel
 
+from chat import ChatMessage, chat, refresh_output
 from resume_chatbot_agent import ResumeChatbotAgent
 
 
@@ -30,7 +30,7 @@ def handle_upload(e: me.UploadEvent):
     resume_chatbot_agent.upload_resume(_convert_contents_data_url(e.file))
     state.file_uploaded = e.file
     state.file_size_error = False
-
+    refresh_output()
 
 def upload_component():
     state = me.state(State)
@@ -70,7 +70,7 @@ def app():
                     style=me.Style(color=me.theme_var("primary")))
         if state.file_uploaded:
             upload_component()
-            mel.chat(
+            chat(
                 transform, title=f"Resume Chatbot - {state.file_uploaded._name}", bot_user="Resume Chatbot")
         else:
             with me.box(style=me.Style(margin=me.Margin.all(10))):
@@ -89,6 +89,6 @@ def _convert_contents_data_url(file: me.UploadEvent):
     )
 
 
-def transform(input: str, history: list[mel.ChatMessage]):
+def transform(input: str, history: list[ChatMessage]):
     response = resume_chatbot_agent.chat(input)
     yield response
