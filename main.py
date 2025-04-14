@@ -15,6 +15,8 @@ resume_chatbot_agent = ResumeChatbotAgent()
 class State:
     file_uploaded: me.UploadedFile = None
     file_size_error: bool = False
+    data_url: str = None
+    history: tuple[tuple[str, str]] = ()
 
 
 def load(e: me.LoadEvent):
@@ -27,9 +29,10 @@ def handle_upload(e: me.UploadEvent):
     if e.file.size > MAX_FILE_MB_SIZE * 1024 * 1024:
         state.file_size_error = True
         return
-    resume_chatbot_agent.upload_resume(_convert_contents_data_url(e.file))
     state.file_uploaded = e.file
     state.file_size_error = False
+    state.data_url = _convert_contents_data_url(e.file)
+    state.history = ()
     refresh_output()
 
 def upload_component():
@@ -90,5 +93,7 @@ def _convert_contents_data_url(file: me.UploadEvent):
 
 
 def transform(input: str, history: list[ChatMessage]):
-    response = resume_chatbot_agent.chat(input)
+    state = me.state(State)
+    response = resume_chatbot_agent.chat(input, state.data_url, state.history)
+    state.history = state.history + [("user", input), ("assistant", response)]
     yield response
