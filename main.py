@@ -8,6 +8,17 @@ from resume_chatbot_agent import ResumeChatbotAgent
 SIDENAV_WIDTH = 200
 MAX_FILE_MB_SIZE = 5
 
+PRIVACY_NOTICE = """
+This page is powered by Google's Gemini AI model. By using this widget, you acknowledge that:
+
+- Your messages will be processed by Google's AI services
+- Messages are not stored permanently but are used in the current session
+- Personal information should not be shared in conversations
+- The AI may occasionally provide inaccurate information
+
+For more information about Gemini's data handling, please visit [Gemini Apps Privacy Notice](https://support.google.com/gemini/answer/13594961?hl=en#privacy_notice).
+"""
+
 resume_chatbot_agent = ResumeChatbotAgent()
 
 
@@ -18,6 +29,7 @@ class State:
     file_type_error: bool = False
     data_url: str = None
     history: tuple[tuple[str, str]] = ()
+    acknowledgement: bool = False
 
 
 def load(e: me.LoadEvent):
@@ -41,6 +53,7 @@ def handle_upload(e: me.UploadEvent):
     state.data_url = _convert_contents_data_url(e.file)
     state.history = ()
     refresh_output()
+
 
 def upload_component():
     state = me.state(State)
@@ -74,27 +87,43 @@ def upload_component():
 )
 def app():
     state = me.state(State)
-    with me.box(
-        style=me.Style(
-            padding=me.Padding.all(15),
-        ),
-    ):
-        with me.box(style=me.Style(margin=me.Margin.all(10))):
-            me.link(text="Hyun Jae Moon Portfolio", url="https://hyunjaemoon.com",
-                    style=me.Style(color=me.theme_var("primary")))
-        if state.file_uploaded:
-            upload_component()
-            chat(
-                transform, title=f"Resume Chatbot - {state.file_uploaded._name}", bot_user="Resume Chatbot")
-        else:
+    if state.acknowledgement:
+        with me.box(
+            style=me.Style(
+                padding=me.Padding.all(15),
+            ),
+        ):
             with me.box(style=me.Style(margin=me.Margin.all(10))):
-                me.text("Welcome to the Resume Chatbot!",
-                        type="headline-2", style=me.Style(text_align="center"))
-                me.text("Please upload your resume to get started.",
-                        style=me.Style(text_align="center"))
-                me.text(f"File must be a PDF under {MAX_FILE_MB_SIZE}MB.",
-                        style=me.Style(text_align="center"))
+                me.link(text="Hyun Jae Moon Portfolio", url="https://hyunjaemoon.com",
+                        style=me.Style(color=me.theme_var("primary")))
+            if state.file_uploaded:
                 upload_component()
+                chat(
+                    transform, title=f"Resume Chatbot - {state.file_uploaded._name}", bot_user="Resume Chatbot")
+            else:
+                with me.box(style=me.Style(margin=me.Margin.all(10))):
+                    me.text("Welcome to the Resume Chatbot!",
+                            type="headline-2", style=me.Style(text_align="center"))
+                    me.text("Please upload your resume to get started.",
+                            style=me.Style(text_align="center"))
+                    me.text(f"File must be a PDF under {MAX_FILE_MB_SIZE}MB.",
+                            style=me.Style(text_align="center"))
+                    upload_component()
+    else:
+        with me.box(
+            style=me.Style(
+                padding=me.Padding.all(15),
+            ),
+        ):
+            with me.box(style=me.Style(margin=me.Margin.all(10))):
+                me.link(text="Hyun Jae Moon Portfolio", url="https://hyunjaemoon.com",
+                        style=me.Style(color=me.theme_var("primary")))
+            me.text("Welcome to the Resume Chatbot!",
+                    type="headline-2", style=me.Style(text_align="center"))
+            me.markdown(PRIVACY_NOTICE)
+            with me.box(style=me.Style(display="flex", flex_direction="row", gap=12)):
+                me.button("I acknowledge and accept the privacy notice", type="flat",
+                          on_click=lambda _: setattr(me.state(State), 'acknowledgement', True))
 
 
 def _convert_contents_data_url(file: me.UploadEvent):
