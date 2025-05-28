@@ -1,3 +1,4 @@
 mesop
 gunicorn
 google-cloud-aiplatform
+flask

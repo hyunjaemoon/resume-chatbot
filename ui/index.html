@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume Chatbot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+    <h1>Resume Chatbot</h1>
+    <div id="file-input-container">
+        <div class="file-input-wrapper">
+            <input type="file" id="file-input" accept=".pdf">
+            <div class="file-input-button">Upload Resume</div>
+        </div>
+        <div class="file-name" id="file-name"></div>
+    </div>
+    <div id="chat-container"></div>
+    <div class="typing-indicator" id="typing-indicator">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <div id="input-container">
+        <input type="text" id="message-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script src="/scripts/main.js"></script>
+</body>
+</html> 

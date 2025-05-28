@@ -2,8 +2,7 @@ from vertexai.generative_models import Part, Content, GenerativeModel
 import vertexai
 import base64
 import re
-from typing import List
-import mesop.labs as mel
+
 MODEL_NAME = "gemini-2.0-flash"
 
 vertexai.init(project="resume-chatbot-generator", location="us-central1")
