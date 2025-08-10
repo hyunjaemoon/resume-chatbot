@@ -5,13 +5,17 @@ import os
 app = Flask(__name__, static_folder='ui')
 chatbot = ResumeChatbotAgent()
 
-def read_template():
-    with open('ui/index.html', 'r') as f:
+def read_template(path):
+    with open(path, 'r') as f:
         return f.read()
 
 @app.route('/')
 def home():
-    return render_template_string(read_template())
+    return render_template_string(read_template('ui/index.html'))
+
+@app.route('/naver61907817c37afe7c5319377fcc064775.html')
+def naver_site_verification():
+    return 'naver-site-verification: naver61907817c37afe7c5319377fcc064775.html'
 
 @app.route('/styles/<path:filename>')
 def serve_styles(filename):
